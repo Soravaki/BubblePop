@@ -105,6 +105,8 @@ public class Main extends Graph{
         for (String enqueue : g.adjacentTo(String.valueOf(popLocation))){
             q.add(enqueue);
         }
-        if (g.contains)
+        if (g.contains(q.remove())){
+
+        }
     }
 }
