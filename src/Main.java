@@ -4,6 +4,12 @@ import java.sql.Array;
 import java.util.*;
 
 public class Main extends Graph{
+    String[][] maze;
+    int[][] adjMazeRef;
+    int popped, popLocation;
+    String popContent;
+    Queue<Integer> q;
+
     Main(String filename) throws IOException {
         //adjmap = new HashMap<>();
         // Instantiate Scanner and takes in input for how many mazes
@@ -67,21 +73,26 @@ public class Main extends Graph{
         int numDataSets = sc.nextInt();
         sc.nextLine();
 
+
+        //sets arrays
+        this.adjMazeRef = adjMazeRef;
+        this.maze = maze;
+
         // creates coords
         while (numDataSets != 0){
             String bubbleCords[] = sc.nextLine().split(" ");
             //System.out.println(Arrays.toString(bubbleCords));
             // runs bubble popping method
-            pop(maze, adjMazeRef, bubbleCords, g);
+            pop(bubbleCords, g);
             numDataSets--;
         }
     }
 
-    public int[] getCoords(int[][] array, int item){
+    public int[] getNumCoords(int item){
         int[] coords = new int[2];
-        for (int y=0; y<array.length; y++){
-            for (int x=0; x<array[y].length; x++){
-                if (item == array[y][x]) {
+        for (int y=0; y<adjMazeRef.length; y++){
+            for (int x=0; x<adjMazeRef[y].length; x++){
+                if (item == adjMazeRef[y][x]) {
                     // stores location into array that houses the cords
                     coords[0] = y;
                     coords[1] = x;
@@ -91,21 +102,45 @@ public class Main extends Graph{
         return coords;
     }
 
-    public void pop(String[][] mazeArray, int[][] adjMazeArray, String[] coords, Graph g) throws ArrayIndexOutOfBoundsException {
+    public int[] getContentCoords(String item){
+        int[] coords = new int[2];
+        for (int y=0; y<maze.length; y++){
+            for (int x=0; x<maze[y].length; x++){
+                if (Objects.equals(item, maze[y][x])) {
+                    // stores location into array that houses the cords
+                    coords[0] = y;
+                    coords[1] = x;
+                }
+            }
+        }
+        return coords;
+    }
+
+
+    public void pop(String[] startPosCoords, Graph g) throws ArrayIndexOutOfBoundsException {
+        this.popped = 0;
         // instantiate objects for pathfinding
         ArrayList<Integer> visited = new ArrayList<>();
-        Queue<String> q = new LinkedList<>();
+        this.q = new LinkedList<>();
 
-        int[] startPosCords = new int[2];
+        // looks up bubble position number
+        this.popLocation = adjMazeRef[Integer.parseInt(startPosCoords[0])][Integer.parseInt(startPosCoords[1])];
+        // stores what kind of bubble
+        this.popContent = maze[Integer.parseInt(startPosCoords[0])][Integer.parseInt(startPosCoords[1])];
 
-        // looks up bubble position
-        int popLocation = adjMazeArray[Integer.parseInt(coords[0])][Integer.parseInt(coords[1])];
+        System.out.println(popContent);
 
+    }
+
+    public void floodFill(int location, String bubbleContent){
         // start DFS algorithm
         for (String enqueue : g.adjacentTo(String.valueOf(popLocation))){
-            q.add(enqueue);
+            q.add(Integer.parseInt(enqueue));
         }
-        if (g.contains(q.remove())){
+        int[] locationCoords = getNumCoords(location);
+        String content = maze[locationCoords[0][locationCoords[1]];
+        if ( content == bubbleContent){
+            popped++;
 
         }
     }
