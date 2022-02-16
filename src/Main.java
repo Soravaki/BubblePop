@@ -6,19 +6,20 @@ import java.util.*;
 public class Main extends Graph{
     String[][] maze;
     int[][] adjMazeRef;
-    int popped, popLocation;
+    int popped, popLocation, height, length;
     String popContent;
     Queue<Integer> q;
+    Graph g;
+    ArrayList<Integer> visited;
 
     Main(String filename) throws IOException {
         //adjmap = new HashMap<>();
         // Instantiate Scanner and takes in input for how many mazes
         Scanner sc = new Scanner(new File(filename));
 
-        Graph g = new Graph();
-        int height = 10;
-        int length = 10;
-        System.out.println("dimensions in");
+        this.g = new Graph();
+        this.height = 10;
+        this.length = 10;
         // ties the characters together into a graph
         // until num = height -1
 
@@ -37,7 +38,7 @@ public class Main extends Graph{
                 num++;
             }
         }
-
+/*
         // traverses 2d array to make adjList
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < length; x++) {
@@ -59,14 +60,18 @@ public class Main extends Graph{
                     g.addEdge(Integer.toString(adjMazeRef[y][x]), Integer.toString((adjMazeRef[y][x] + height)));
             }
         }
+        */
         //System.out.println(g.adjmap.keySet());
         /*for (int i=0; i<length*height; i++){
             System.out.println(adjmap.containsKey(Integer.toString(i)));
         }*/
         // debug - prints out maze
-        for (int i = 0; i < height; i++) {
+        /*for (int i = 0; i < height; i++) {
             System.out.println(Arrays.toString(maze[i]));
         }
+        for (int i = 0; i < height; i++) {
+            System.out.println(Arrays.toString(adjMazeRef[i]));
+        }*/
         //System.out.println("compiled. length : " + length + " height : " + height + " num : " +numMaze );
 
         // takes in how many bubble sets to pop
@@ -120,28 +125,59 @@ public class Main extends Graph{
     public void pop(String[] startPosCoords, Graph g) throws ArrayIndexOutOfBoundsException {
         this.popped = 0;
         // instantiate objects for pathfinding
-        ArrayList<Integer> visited = new ArrayList<>();
-        this.q = new LinkedList<>();
+        this.visited = new ArrayList<>();
 
-        // looks up bubble position number
+        // looks up bubble position number and stores location and content in vars
         this.popLocation = adjMazeRef[Integer.parseInt(startPosCoords[0])][Integer.parseInt(startPosCoords[1])];
-        // stores what kind of bubble
         this.popContent = maze[Integer.parseInt(startPosCoords[0])][Integer.parseInt(startPosCoords[1])];
 
-        System.out.println(popContent);
+        // DEBUG
+        //System.out.print(popContent + " ");
+        floodFill(popLocation, popContent);
 
+        // output
+        if (popped < 3) System.out.println("NO ");
+        else System.out.println("YES " + popped);
+        //System.out.println(visited);
     }
 
-    public void floodFill(int location, String bubbleContent){
-        // start DFS algorithm
-        for (String enqueue : g.adjacentTo(String.valueOf(popLocation))){
-            q.add(Integer.parseInt(enqueue));
-        }
-        int[] locationCoords = getNumCoords(location);
-        String content = maze[locationCoords[0][locationCoords[1]];
-        if ( content == bubbleContent){
-            popped++;
+    public void floodFill(int popLocation, String popContent){
+        // add locatino to visited ArrayList
+        visited.add(popLocation);
+        // get the coords of the numLocation
+        int[] locationCoords = getNumCoords(popLocation);
 
+        // gets the letter content of the location
+        String content = maze[locationCoords[0]][locationCoords[1]];
+
+        // recursive algorithm
+        if (Objects.equals(content, popContent)){
+            popped++;
+            // DEBUG
+            //System.out.print("\n"+popLocation);
+            // right of location
+            if ((popLocation+1)%10<length && !(visited.contains((popLocation+1)))){
+                floodFill(popLocation+1, popContent);
+                //System.out.println("visiting");
+            }
+
+            // left of location
+            if (popLocation-1>=0 && !(visited.contains((popLocation-1)))){
+                floodFill(popLocation-1, popContent);
+                //System.out.println("visiting");
+            }
+
+            // up from location
+            if (popLocation+height<length*height && !(visited.contains((popLocation+height)))){
+                floodFill(popLocation+height, popContent);
+                //System.out.println("visiting");
+            }
+
+            // down from location
+            if (popLocation-height>=0 && !(visited.contains((popLocation-height)))){
+                floodFill(popLocation-height, popContent);
+                //System.out.println("visiting");
+            }
         }
     }
 }
