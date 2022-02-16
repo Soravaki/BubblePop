@@ -1,6 +1,9 @@
 import java.io.File;
 import java.util.*;
 
+
+// THIS CODE IS MAINLY FOR REFERENCE FOR FUTURE ASSIGNMENTS, SINCE I CODED
+// AN ENTIRE FUNCTION FOR GRAPH BUT NEVER USED IT PROPERLY
 public class Graph {
     public HashMap<String, TreeSet<String>> adjmap;
     private int numEdges;
